@@ -56,21 +56,31 @@ int main() {
     }
 
     // Days till previous day of the selected month
+    int daysInSelectedMonth;
     if (isLeap && selectedMonth == 1) {
         days -= daysInMonth[selectedMonth] + 1;
+        daysInSelectedMonth = daysInMonth[selectedMonth] + 1;
     } else {
         days -= daysInMonth[selectedMonth];
+        daysInSelectedMonth = daysInMonth[selectedMonth];
     }
 
     // Day of the week that the month start
     char dayOfWeek = daysInWeek[days % 7][0];
+    int weeks;
+    if (((days % 7) + daysInSelectedMonth ) % 7 == 0) {
+        weeks = ((days % 7) + daysInSelectedMonth ) / 7;
+    } else {
+        weeks = ((days % 7) + daysInSelectedMonth ) / 7 + 1;
+    }
+
 
     //Print the calendar
      printf("|  Monday   ||  Tuesday  || Wednesday ||  Thursday ||  Friday   ||  Saturday ||  Sunday   |\n");
      printf("|-----------||-----------||-----------||-----------||-----------||-----------||-----------|\n");
-    while(firstDay <= daysInMonth[selectedMonth]) {
+    for(int i = 0; i < weeks; i++) {
         for(int j = 0; j < 7; j++) {
-            if (dayOfWeek == daysInWeek[j][0] && firstDay == 0) {
+            if (dayOfWeek == daysInWeek[j][0] && firstDay < daysInSelectedMonth) {
                 firstDay++;
                 if (firstDay / 10 == 0) {
                     printf("|     %d     |", firstDay);
@@ -78,15 +88,14 @@ int main() {
                     printf("|     %d    |", firstDay);
                 }
             } else {
-                if (firstDay != 0 && firstDay < daysInMonth[selectedMonth]) {
-                    firstDay++;
+                if (firstDay != 0 && firstDay < daysInSelectedMonth) {
+                firstDay++;
                     if (firstDay / 10 == 0) {
                         printf("|     %d     |", firstDay);
                     } else {
                         printf("|     %d    |", firstDay);
                     }
                 } else {
-                    firstDay++;
                     printf("|     *     |");
                 }
             }
