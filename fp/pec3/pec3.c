@@ -13,10 +13,10 @@ int main() {
     int firstDay = 0;
     int isLeap = 0;
 
-    printf("Year: ");
-    scanf("%d", &year);
-    printf("Month: ");
+    printf("¿Mes (1..12)?)");
     scanf("%s", month);
+    printf("¿Año (1601..3000)?");
+    scanf("%d", &year);
 
     if (year < 1601 || year > 3000) {
         return 0;
@@ -74,29 +74,119 @@ int main() {
         weeks = ((days % 7) + daysInSelectedMonth ) / 7 + 1;
     }
 
+    int total_width = 28;
+    int month_length = strlen(month);
+    int year_length = snprintf(NULL, 0, "%d", year);
+    int spaces = total_width - month_length - year_length - 1;
 
-    //Print the calendar
-     printf("|  Monday   ||  Tuesday  || Wednesday ||  Thursday ||  Friday   ||  Saturday ||  Sunday   |\n");
-     printf("|-----------||-----------||-----------||-----------||-----------||-----------||-----------|\n");
+    printf("\n");
+     printf("%s", month);
+     for (int i = 0; i < spaces; i++) {
+         printf(" ");
+     }
+     printf("%d\n", year);
+     printf("===========================\n");
+     printf("LU  MA  MI  JU  VI | SA  DO\n");
+     printf("===========================\n");
     for(int i = 0; i < weeks; i++) {
         for(int j = 0; j < 7; j++) {
             if (dayOfWeek == daysInWeek[j][0] && firstDay < daysInSelectedMonth) {
                 firstDay++;
                 if (firstDay / 10 == 0) {
-                    printf("|     %d     |", firstDay);
+                    switch(j) {
+                        case 0:
+                            printf(" %d", firstDay);
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                            printf("   %d", firstDay);
+                            break;
+                        case 5:
+                            printf(" |  %d", firstDay);
+                            break;
+                        case 6:
+                            printf("   %d", firstDay);
+                            break;
+                    }
                 } else {
-                    printf("|     %d    |", firstDay);
+                    switch(j) {
+                        case 0:
+                            printf("%d", firstDay);
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                            printf("  %d", firstDay);
+                            break;
+                        case 5:
+                            printf(" | %d", firstDay);
+                            break;
+                        case 6:
+                            printf("  %d", firstDay);
+                            break;
+                    }
                 }
             } else {
                 if (firstDay != 0 && firstDay < daysInSelectedMonth) {
                 firstDay++;
                     if (firstDay / 10 == 0) {
-                        printf("|     %d     |", firstDay);
+                        switch(j) {
+                            case 0:
+                                printf(" %d", firstDay);
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                printf("   %d", firstDay);
+                                break;
+                            case 5:
+                                printf(" |  %d", firstDay);
+                                break;
+                            case 6:
+                                printf("   %d", firstDay);
+                                break;
+                        }
                     } else {
-                        printf("|     %d    |", firstDay);
+                        switch(j) {
+                            case 0:
+                                printf("%d", firstDay);
+                                break;
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 4:
+                                printf("  %d", firstDay);
+                                break;
+                            case 5:
+                                printf(" | %d", firstDay);
+                                break;
+                            case 6:
+                                printf("  %d", firstDay);
+                                break;
+                        }
                     }
                 } else {
-                    printf("|     *     |");
+                    switch(j) {
+                        case 0:
+                            printf(" .");
+                            break;
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                            printf("   .");
+                            break;
+                        case 5:
+                            printf(" |  .");
+                            break;
+                        case 6:
+                            printf("   .");
+                            break;
+                    }
                 }
             }
         };
