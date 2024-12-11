@@ -7,24 +7,27 @@ void printDay(int dayWeek, int dayNumber);
 void printTwoDigitDay(int dayWeek, int dayNumber);
 void printCalendarHeader(char *month, int year);
 void printEmptyDay(int dayWeek);
+int calculateDays(int year, int month, int daysInMonth[]);
 
 typedef enum dayType {Lunes, Martes, Miercoles, Jueves, Viernes, Sabado, Domingo};
 typedef enum monthType {Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre};
 
 
 int main() {
-    int year;
-    char month[10];
-    int selectedMonth;
-    int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     char monthInYear[12][20] = {"JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"};
+    int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     char daysInWeek[7][1] = {"L","M","X","J","V","S","D"};
-    int days;
+    int selectedMonth;
+    int daysInSelectedMonth = 0;
     int firstDay = 0;
     int isLeap = 0;
+    char month[10];
+    int year;
+    int days = 0;
 
     printf("¿Mes (1..12)?)");
-    scanf("%s", month);
+    scanf("%d", &selectedMonth);
+    selectedMonth--;
     printf("¿Año (1601..3000)?");
     scanf("%d", &year);
     isLeap = isLeapYear(year);
@@ -33,46 +36,11 @@ int main() {
         return 0;
     }
 
-    // Days till 31th of December of the selected year
-    for(int i = 1601; i <= year; i++) {
-        if (i % 4 == 0 && (i % 100 != 0 || i % 400 == 0)) {
-            days += 366;
-        } else {
-            days += 365;
-        }
-    }
+    days = calculateDays(year, selectedMonth, daysInMonth);
 
-    // Days till 31th of December of previous year
-    if (isLeap == 1) {
-        isLeap = 1;
-        days -= 366;
-    } else {
-        days -= 365;
-    }
-
-    // Days till the selected month
-    for(int i = 0; i < 12; i++) {
-        if (strcmp(month, monthInYear[i]) == 0) {
-            selectedMonth = i;
-            break;
-        }
-        
-    };
-    for(int i = 0; i <= selectedMonth; i++) {
-        if(isLeap && i == 1) {
-            days += daysInMonth[i] + 1;
-        } else {
-            days += daysInMonth[i];
-        }
-    }
-
-    // Days till previous day of the selected month
-    int daysInSelectedMonth;
-    if (isLeap && selectedMonth == 1) {
-        days -= daysInMonth[selectedMonth] + 1;
+    if(isLeap && selectedMonth == 1) {
         daysInSelectedMonth = daysInMonth[selectedMonth] + 1;
     } else {
-        days -= daysInMonth[selectedMonth];
         daysInSelectedMonth = daysInMonth[selectedMonth];
     }
 
@@ -199,3 +167,32 @@ void printCalendarHeader(char *month, int year) {
      printf("LU  MA  MI  JU  VI | SA  DO\n");
      printf("===========================\n");
 };
+
+int calculateDays(int year, int month, int daysInMonth[]) {
+    int days = 0;
+    // Days till 31th of December of the selected year
+    for(int i = 1601; i < year; i++) {
+        if (isLeapYear(i) == 1) {
+            days += 366;
+        } else {
+            days += 365;
+        }
+    }
+
+    for(int i = 0; i <= month; i++) {
+        if(isLeapYear(year) == 1 && i == 1) {
+            days += daysInMonth[i] + 1;
+        } else {
+            days += daysInMonth[i];
+        }
+    }
+
+    // Days till previous day of the selected month
+    if (isLeapYear(1) == 1 && month == 1) {
+        days -= daysInMonth[month] + 1;
+    } else {
+        days -= daysInMonth[month];
+    }
+
+    return days;
+}
