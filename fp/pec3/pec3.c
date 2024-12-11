@@ -21,7 +21,6 @@ int main() {
     int daysInSelectedMonth = 0;
     int firstDay = 0;
     int isLeap = 0;
-    char month[10];
     int year;
     int days = 0;
 
@@ -54,7 +53,7 @@ int main() {
     }
 
 
-    printCalendarHeader(month, year);
+    printCalendarHeader(monthInYear[selectedMonth], year);
     for(int i = 0; i < weeks; i++) {
         for(int j = 0; j < 7; j++) {
             if (dayOfWeek == daysInWeek[j][0] && firstDay < daysInSelectedMonth) {
