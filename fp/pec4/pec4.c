@@ -1,29 +1,49 @@
 #include <stdio.h>
 
 char renderMenu();
-void editBuilding();
+void editBuilding(Node **head);
 void listBuildings();
 void availableApartments();
 void reserveApartment();
 void monthlyReservations();
-void renderOption(char option);
+void renderOption(char option, Node **head);
+void addBuilding(Node **head, Building building);
 
+typedef struct Building{
+    int buildingId;
+    char buildingName[20];
+    int basicApartments;
+    int normalApartments;
+    int luxuryApartments;
+} Building;
+
+//add previous Node to free at the end of program
+typedef struct Node {
+    Building building;
+    struct Node *next;
+} Node;
+
+const MAX_BUILDINGS = 5;
+const MAX_APPARMENTS = 20;
+const IS_TRUE = 1;
+const IS_FALSE = 0;
 
 int main() {
     char option;
+    Node *head = NULL;
 
     do {
         option = renderMenu();
-        renderOption(option);
+        renderOption(option, &head);
     } while(option != 'S');
 
     return 0;
 };
 
-void renderOption(char option) {
+void renderOption(char option, Node **head) {
     switch(option) {
         case 'E':
-            editBuilding();
+            editBuilding(head);
             break;
         case 'L':
             listBuildings();
@@ -63,34 +83,30 @@ char renderMenu() {
     return option;
 };
 
-void editBuilding() {
-    int buildingId;
-    char buildingName[20];
-    int basicApartments = 0;
-    int normalApartments = 0;
-    int luxuryApartments = 0;
+void editBuilding(Node **head) {
+    Building building;
     char correctData;
-    int deletePreviousData = 0;
 
     printf("\nEditar Edificio:\n");
     printf("\n");
     printf("Identificador (número entre 1 y 5)?");
-    scanf("%d", &buildingId);
+    scanf("%d", &building.buildingId);
     printf("Nombre (entre 1 y 20 caracteres)?");
-    scanf("%s", buildingName);
+    scanf("%s", building.buildingName);
     printf("Número de Apartamentos Básicos?");
-    scanf("%d", &basicApartments);
+    scanf("%d", &building.basicApartments);
     printf("Número de Apartamentos Normales?");
-    scanf("%d", &normalApartments);
+    scanf("%d", &building.normalApartments);
     printf("Número de Apartamentos de Lujo?");
-    scanf("%d", &luxuryApartments);
+    scanf("%d", &building.luxuryApartments);
     printf("\n");
     printf("IMPORTANTE: Esta opción borra los datos anteriores.\n");
     printf("Son correctos los nuevos datos (S/N)?");
     scanf(" %c", &correctData);
+
     if(correctData == 'S') {
-        deletePreviousData = 1;
-    }
+        addBuilding(head, building);
+    };
 };
 
 void listBuildings() {
@@ -190,4 +206,29 @@ void monthlyReservations() {
     printf("\n");
     printf("Mostrar otro mes (S/N)?\n");
     scanf(" %c", &showAnotherMonth);
+};
+
+void addBuilding(Node **head, Building building) {
+    int apartmentsBuilding = building.basicApartments + building.normalApartments + building.luxuryApartments;
+    int apartmentsBuildings = 0;
+    int totalApartments = 0;
+    int i = 0;
+    int j = 0;
+
+//count total appartments
+    Node *current = *head;
+    while(current != NULL) {
+        apartmentsBuildings += current->building.basicApartments + current->building.normalApartments + current->building.luxuryApartments;
+        current = current->next;
+        i++;
+    };
+    totalApartments = apartmentsBuilding + apartmentsBuildings;
+
+//condition if there is full capacity
+    if (totalApartments > 20 || i == 5) {
+        printf("Full capacity, please remove or edit building\n");
+        return;
+    };
+
+//add building to the linked list
 };
