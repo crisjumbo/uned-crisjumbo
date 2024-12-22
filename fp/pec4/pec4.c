@@ -6,25 +6,49 @@ void listBuildings();
 void availableApartments();
 void reserveApartment();
 void monthlyReservations();
+void renderOption(char option);
 
 
 int main() {
     char option;
 
-    option = renderMenu();
-    editBuilding();
-    listBuildings();
-    availableApartments();
-    reserveApartment();
-    monthlyReservations();
+    do {
+        option = renderMenu();
+        renderOption(option);
+    } while(option != 'S');
 
     return 0;
+};
+
+void renderOption(char option) {
+    switch(option) {
+        case 'E':
+            editBuilding();
+            break;
+        case 'L':
+            listBuildings();
+            break;
+        case 'A':
+            availableApartments();
+            break;
+        case 'R':
+            reserveApartment();
+            break;
+        case 'M':
+            monthlyReservations();
+            break;
+        case 'S':
+            break;
+        default:
+            printf("Opción no válida\n");
+            break;
+    }
 };
 
 char renderMenu() {
     char option;
 
-    printf("GesRAE: Gestion de Reservas Apartamentos-Edificios\n");
+    printf("\nGesRAE: Gestion de Reservas Apartamentos-Edificios\n");
     printf("\n");
     printf("    Editar Edificion                        (Pulsar E)\n");
     printf("    Listar Edificios                        (Pulsar L)\n");
@@ -33,26 +57,44 @@ char renderMenu() {
     printf("    Reservas Mensuales Apartamento          (Pulsar M)\n");
     printf("    Salir                                   (Pulsar S)\n");
     printf("\n");
-    printf("Teclear una opcion valida (E|L|A|R|M|S)?\n");
-    scanf("%c", &option);
+    printf("Teclear una opcion valida (E|L|A|R|M|S)?");
+    scanf(" %c", &option);
 
     return option;
 };
 
 void editBuilding() {
-    printf("Editar Edificio:\n");
+    int buildingId;
+    char buildingName[20];
+    int basicApartments = 0;
+    int normalApartments = 0;
+    int luxuryApartments = 0;
+    char correctData;
+    int deletePreviousData = 0;
+
+    printf("\nEditar Edificio:\n");
     printf("\n");
-    printf("Identificador (número entre 1 y 5)?\n");
-    printf("Nombre (entre 1 y 20 caracteres)?\n");
+    printf("Identificador (número entre 1 y 5)?");
+    scanf("%d", &buildingId);
+    printf("Nombre (entre 1 y 20 caracteres)?");
+    scanf("%s", buildingName);
     printf("Número de Apartamentos Básicos?");
+    scanf("%d", &basicApartments);
     printf("Número de Apartamentos Normales?");
+    scanf("%d", &normalApartments);
     printf("Número de Apartamentos de Lujo?");
+    scanf("%d", &luxuryApartments);
     printf("\n");
-    printf("IMPORTANTE: Esta opción borra los datos anteriores.\nSon correctos los nuevos datos (S/N)?");
+    printf("IMPORTANTE: Esta opción borra los datos anteriores.\n");
+    printf("Son correctos los nuevos datos (S/N)?");
+    scanf(" %c", &correctData);
+    if(correctData == 'S') {
+        deletePreviousData = 1;
+    }
 };
 
 void listBuildings() {
-    printf("Id   Nombre  Aptos Basicos  Aptos Normales  Aptos Lujo\n");
+    printf("\nId   Nombre  Aptos Basicos  Aptos Normales  Aptos Lujo\n");
     printf("1   Neptuno       10              5              2\n");
     printf("3   Apolo         15              8              3\n");
     printf("4   Zeus          20             10              4\n");
@@ -60,12 +102,23 @@ void listBuildings() {
 };
 
 void availableApartments() {
-    printf("Apartamentos Disponibles:\n");
-    printf("    Identificador Edificio?\n");
-    printf("    Fecha de Entrada: Dia?\n");
-    printf("    Fecha de Entrada: Mes?\n");
-    printf("    Fecha de Entrada: Año?\n");
-    printf("    Dias de duracion de la estancia?\n");
+    int buildingId;
+    int day;
+    int month;
+    int year;
+    int stayDays;
+
+    printf("\nApartamentos Disponibles:\n");
+    printf("    Identificador Edificio?");
+    scanf("%d", &buildingId);
+    printf("    Fecha de Entrada: Dia?");
+    scanf("%d", &day);
+    printf("    Fecha de Entrada: Mes?");
+    scanf("%d", &month);
+    printf("    Fecha de Entrada: Año?");
+    scanf("%d", &year);
+    printf("    Dias de duracion de la estancia?");
+    scanf("%d", &stayDays);
     printf("\n");
     printf("El edificio Apolo desde el 8/9/2025 y 15 días de estancia, tendría disponibles:\n");
     printf("\n");
@@ -75,14 +128,28 @@ void availableApartments() {
 };
 
 void reserveApartment() {
-    printf("Reservar Apartamento:\n");
+    int buildingId;
+    char apartmentType;
+    char correctData;
+    int entryDay;
+    int entryMonth;
+    int entryYear;
+    int stayDays;
+
+    printf("\nReservar Apartamento:\n");
     printf("\n");
-    printf("    Identificador Edificio?\n");
-    printf("    Tipo de Apartamento (B-Basico|N-Normal|L-Lujo)?\n");
-    printf("    Fecha de Entrada: Dia?\n");
-    printf("    Fecha de Entrada: Mes?\n");
-    printf("    Fecha de Entrada: Año?\n");
-    printf("    Dias de duracion de la estancia?\n");
+    printf("    Identificador Edificio?");
+    scanf("%d", &buildingId);
+    printf("    Tipo de Apartamento (B-Basico|N-Normal|L-Lujo)?");
+    scanf(" %c", &apartmentType);
+    printf("    Fecha de Entrada: Dia?");
+    scanf("%d", &entryDay);
+    printf("    Fecha de Entrada: Mes?");
+    scanf("%d", &entryMonth);
+    printf("    Fecha de Entrada: Año?");
+    scanf("%d", &entryYear);
+    printf("    Dias de duracion de la estancia?");
+    scanf("%d", &stayDays);
     printf("\n");
     printf("        Datos de reserva");
     printf("\n");
@@ -94,14 +161,23 @@ void reserveApartment() {
     printf("    Fecha salida:\n");
     printf("\n");
     printf("Es correcta la operacion? (S/N)?\n");
+    scanf(" %c", &correctData);
 };
 
 void monthlyReservations() {
-    printf("Reservas Mensuales Apartamento:\n");
+    char showAnotherMonth;
+    int buildingId;
+    int month;
+    int year;
+
+    printf("\nReservas Mensuales Apartamento:\n");
     printf("\n");
-    printf("    Referencia Apartamento ?\n");
-    printf("    Selección Mes?\n");
-    printf("    Selección Año?\n");
+    printf("    Referencia Apartamento ?");
+    scanf("%d", &buildingId);
+    printf("    Selección Mes?");
+    scanf("%d", &month);
+    printf("    Selección Año?");
+    scanf("%d", &year);
     printf("\n");
     printf("    Estado Mensual Apartamento:\n");
     printf("        Edificion:\n");
@@ -113,4 +189,5 @@ void monthlyReservations() {
     printf("Total días libres del mes: xx dias\n");
     printf("\n");
     printf("Mostrar otro mes (S/N)?\n");
+    scanf(" %c", &showAnotherMonth);
 };
