@@ -1,13 +1,5 @@
 #include <stdio.h>
-
-char renderMenu();
-void editBuilding(Node **head);
-void listBuildings();
-void availableApartments();
-void reserveApartment();
-void monthlyReservations();
-void renderOption(char option, Node **head);
-void addBuilding(Node **head, Building building);
+#include <stdlib.h>
 
 typedef struct Building{
     int buildingId;
@@ -17,16 +9,26 @@ typedef struct Building{
     int luxuryApartments;
 } Building;
 
-//add previous Node to free at the end of program
 typedef struct Node {
     Building building;
+    struct Node *prev;
     struct Node *next;
 } Node;
 
-const MAX_BUILDINGS = 5;
-const MAX_APPARMENTS = 20;
-const IS_TRUE = 1;
-const IS_FALSE = 0;
+const int MAX_BUILDINGS = 5;
+const int MAX_APPARMENTS = 20;
+const int IS_TRUE = 1;
+const int IS_FALSE = 0;
+
+char renderMenu();
+void editBuilding(Node **head);
+void listBuildings(Node **head);
+void availableApartments();
+void reserveApartment();
+void monthlyReservations();
+void renderOption(char option, Node **head);
+void addBuilding(Node **head, Building building);
+void getBuildings(Node **head);
 
 int main() {
     char option;
@@ -46,7 +48,7 @@ void renderOption(char option, Node **head) {
             editBuilding(head);
             break;
         case 'L':
-            listBuildings();
+            listBuildings(head);
             break;
         case 'A':
             availableApartments();
@@ -109,12 +111,9 @@ void editBuilding(Node **head) {
     };
 };
 
-void listBuildings() {
+void listBuildings(Node **head) {
     printf("\nId   Nombre  Aptos Basicos  Aptos Normales  Aptos Lujo\n");
-    printf("1   Neptuno       10              5              2\n");
-    printf("3   Apolo         15              8              3\n");
-    printf("4   Zeus          20             10              4\n");
-    printf("5   Atenea        25             12              5\n");
+    getBuildings(head);
 };
 
 void availableApartments() {
@@ -223,6 +222,7 @@ void addBuilding(Node **head, Building building) {
         i++;
     };
     totalApartments = apartmentsBuilding + apartmentsBuildings;
+    free(current);
 
 //condition if there is full capacity
     if (totalApartments > 20 || i == 5) {
@@ -231,4 +231,44 @@ void addBuilding(Node **head, Building building) {
     };
 
 //add building to the linked list
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->building = building;
+    newNode->next = NULL;
+    newNode->prev = NULL;
+
+    if(*head == NULL) {
+        *head = newNode;
+        free(newNode);
+    } else {
+        Node *current = *head;
+        while(current->next != NULL) {
+            if(current->building.buildingId == building.buildingId) {
+                current->building = building;
+                free(newNode);
+                return;
+            };
+            current = current->next;
+        };
+        if (current->building.buildingId != building.buildingId) {
+            current->next = newNode;
+            newNode->prev = current;
+            free(newNode);
+        };
+        
+        free(current);
+    };
+};
+
+void getBuildings(Node **head) {
+    Node *current = *head;
+    while(current != NULL) {
+        printf("\nId   Nombre  Aptos Basicos  Aptos Normales  Aptos Lujo\n");
+        printf(" %d   ", current->building.buildingId);
+        printf("%s   ", current->building.buildingName);
+        printf(" %d   ", current->building.basicApartments);
+        printf(" %d   ", current->building.normalApartments);
+        printf(" %d   ", current->building.luxuryApartments);
+        current = current->next;
+    };
+    free(current);
 };
