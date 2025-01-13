@@ -7,7 +7,7 @@ typedef enum monthType {Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto
 const int START_YEAR = 1601;
 
 int isLeapYear(int year) {
-    if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) {
+    if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
         return 1;
     } else {
         return 0;
@@ -150,6 +150,7 @@ int calculateDays(int year, int month) {
         }
     }
 
+    // Days till the last day of the selected month
     for(int i = 0; i <= month; i++) {
         if(isLeapYear(year) == 1 && i == 1) {
             days = days + daysInMonth(i) + 1;
@@ -159,8 +160,8 @@ int calculateDays(int year, int month) {
     }
 
     // Days till previous day of the selected month
-    if (isLeapYear(1) == 1 && month == 1) {
-        days = days - daysInMonth(month) + 1;
+    if (isLeapYear(year) == 1 && month == 1) {
+        days = days - daysInMonth(month) - 1;
     } else {
         days = days - daysInMonth(month);
     }
@@ -224,6 +225,7 @@ int main() {
 
     // Day of the week that the month start
     dayOfWeek = daysInWeek(days % 7);
+
     if (((days % 7) + daysInSelectedMonth ) % 7 == 0) {
         weeks = ((days % 7) + daysInSelectedMonth ) / 7;
     } else {
@@ -259,5 +261,3 @@ int main() {
 
     return 0;
 }
-
-
