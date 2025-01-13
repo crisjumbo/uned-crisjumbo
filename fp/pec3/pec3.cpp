@@ -6,11 +6,11 @@ typedef enum dayType {Lunes, Martes, Miercoles, Jueves, Viernes, Sabado, Domingo
 typedef enum monthType {Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre};
 const int START_YEAR = 1601;
 
-int isLeapYear(int year) {
+bool isLeapYear(int year) {
     if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-        return 1;
+        return true;
     } else {
-        return 0;
+        return false;
     }
 }
 
@@ -139,11 +139,11 @@ int daysInMonth (int monthN) {
   }
 }
 
-int calculateDays(int year, int month) {
+int calculateDays(int year, int month, bool isLeap) {
     int days = 0;
     // Days till 31th of December of the selected year
     for(int i = START_YEAR; i < year; i++){
-        if (isLeapYear(i) == 1) {
+        if (isLeapYear(i)) {
             days = days + 366;
         } else {
             days = days + 365;
@@ -152,7 +152,7 @@ int calculateDays(int year, int month) {
 
     // Days till the last day of the selected month
     for(int i = 0; i <= month; i++) {
-        if(isLeapYear(year) == 1 && i == 1) {
+        if(isLeap && i == 1) {
             days = days + daysInMonth(i) + 1;
         } else {
             days = days + daysInMonth(i);
@@ -160,7 +160,7 @@ int calculateDays(int year, int month) {
     }
 
     // Days till previous day of the selected month
-    if (isLeapYear(year) == 1 && month == 1) {
+    if (isLeap && month == 1) {
         days = days - daysInMonth(month) - 1;
     } else {
         days = days - daysInMonth(month);
@@ -198,7 +198,7 @@ int main() {
     int selectedMonth;
     int daysInSelectedMonth = 0;
     int firstDay = 0;
-    int isLeap = 0;
+    bool isLeap;
     int year;
     int weeks;
     int days = 0;
@@ -215,7 +215,7 @@ int main() {
         return 0;
     }
 
-    days = calculateDays(year, selectedMonth);
+    days = calculateDays(year, selectedMonth, isLeap);
 
     if(isLeap && selectedMonth == 1) {
         daysInSelectedMonth = daysInMonth(selectedMonth) + 1;
