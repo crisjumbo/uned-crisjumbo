@@ -1,58 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
-const int MAX_BUILDINGS = 5;
-const int MAX_APPARMENTS = 20;
-const int MAX_CHARACTERS = 20;
-const int BUILDING_PROPS = 5;
-
-typedef char String[MAX_CHARACTERS];
-
-typedef enum Months {Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre};
-typedef enum WeekDays {Lunes, Martes, Miercoles, Jueves, Viernes, Sabado, Domingo};
-
-typedef struct BuildingType{
-    int buildingId;
-    String buildingName;
-    int basicApartments;
-    int normalApartments;
-    int luxuryApartments;
-    bool isEmpty;
-};
-
-typedef BuildingType Buildings[MAX_BUILDINGS];
-
-typedef struct AvalabilityApartmentType {
-  int buildingId;
-  int entranceDay;
-  int entranceMonth;
-  int entranceYear;
-  int stanceDays;
-};
-
-typedef struct ReservationType {
-  int reservationId;
-  int buildingId;
-  char apartmentType;
-  int entranceDay;
-  int entranceMonth;
-  int entranceYear;
-  int stanceDays;
-  ReservationType *next;
-};
-
-typedef struct DateType {
-  int day;
-  int month;
-  int year;
-};
-
-/**TAD**/
-typedef struct MonthCalendar {
-  int month;
-  int year;
-  String apartmentRef;
-};
+#include "pec4.h"
 
 /********** Util Methods *********/
 bool isBuildingEmpty(BuildingType building) {
@@ -83,7 +31,7 @@ void deleteBuilding(Buildings &buildings, int buildingId) {
     if (buildings[i].buildingId == buildingId) {
       buildings[i].buildingId = buildingId;
       buildings[i].isEmpty = true;
-      strcpy("", buildings[i].buildingName);
+      strcpy(buildings[i].buildingName, "");
       buildings[i].basicApartments = 0;
       buildings[i].normalApartments = 0;
       buildings[i].luxuryApartments = 0;
@@ -96,7 +44,7 @@ void addBuilding(Buildings &buildings, BuildingType building) {
     if (buildings[i].buildingId == building.buildingId) {
       buildings[i].buildingId = building.buildingId;
       buildings[i].isEmpty = false;
-      strcpy(building.buildingName,buildings[i].buildingName);
+      strcpy(buildings[i].buildingName,building.buildingName);
       buildings[i].basicApartments = building.basicApartments;
       buildings[i].normalApartments = building.normalApartments;
       buildings[i].luxuryApartments = building.luxuryApartments;
@@ -104,25 +52,25 @@ void addBuilding(Buildings &buildings, BuildingType building) {
   }
 }
 
-void getBuildings(Buildings &buildings) {
+void renderBuildings(Buildings &buildings) {
     for(int i = 0; i < MAX_BUILDINGS; i++) {
-      for(int j = 0; i < BUILDING_PROPS; j++) {
+      for(int j = 0; j < BUILDING_PROPS; j++) {
         if(!buildings[i].isEmpty) {
           switch(j) {
             case 0:
-            printf("%d", buildings[i].buildingId);
+            printf(" %d ", buildings[i].buildingId);
             break;
             case 1:
-            printf("%s", buildings[i].buildingName);
+            printf(" %s ", buildings[i].buildingName);
             break;
             case 2:
-            printf("%d", buildings[i].basicApartments);
+            printf(" %d ", buildings[i].basicApartments);
             break;
             case 3:
-            printf("%d", buildings[i].normalApartments);
+            printf(" %d ", buildings[i].normalApartments);
             break;
             default:
-            printf("%d", buildings[i].luxuryApartments);
+            printf(" %d ", buildings[i].luxuryApartments);
           }
         }
       }
@@ -130,11 +78,11 @@ void getBuildings(Buildings &buildings) {
     }
 }
 
-void initializeBuildings(Buildings &buildings) {
+void initializeBuildings(Buildings & buildings) {
   for(int i = 0; i < MAX_BUILDINGS; i++) {
     buildings[i].buildingId = i + 1;
     buildings[i].isEmpty = true;
-    strcpy("", buildings[i].buildingName);
+    strcpy(buildings[i].buildingName, "");
     buildings[i].basicApartments = 0;
     buildings[i].normalApartments = 0;
     buildings[i].luxuryApartments = 0;
@@ -182,7 +130,7 @@ void availableApartments() {
     printf("    Dias de duracion de la estancia?");
     scanf("%d", &stayDays);
     printf("\n");
-    printf("El edificio Apolo desde el 8/9/2025 y 15 dias de estancia, tendria disponibles:\n");
+    printf("El edificio Apolo desde el 8/9/2025 y 15 dias de estancia, tendr�a disponibles:\n");
     printf("\n");
     printf("4 apartamentos basicos\n");
     printf("2 apartamentos normales\n");
@@ -238,9 +186,9 @@ void monthlyReservations() {
     printf("\n");
     printf("    Referencia Apartamento ?");
     scanf("%d", &buildingId);
-    printf("    Seleccion Mes?");
+    printf("    Selecci�n Mes?");
     scanf("%d", &month);
-    printf("    Seleccion Annio?");
+    printf("    Selecci�n A�o?");
     scanf("%d", &year);
     printf("\n");
     printf("    Estado Mensual Apartamento:\n");
@@ -249,8 +197,8 @@ void monthlyReservations() {
     printf("Reserva 21/2025: Fecha entrada 27/8/2025 y de 10 d�as\n");
     printf("Reserva 21/2025: Fecha entrada 27/8/2025 y de 10 d�as\n");
     printf("Reserva 21/2025: Fecha entrada 27/8/2025 y de 10 d�as\n");
-    printf("Total dias reservados del mes: xx dias\n");
-    printf("Total dias libres del mes: xx dias\n");
+    printf("Total d�as reservados del mes: xx dias\n");
+    printf("Total d�as libres del mes: xx dias\n");
     printf("\n");
     printf("Mostrar otro mes (S/N)?\n");
     scanf(" %c", &showAnotherMonth);
@@ -259,7 +207,7 @@ void monthlyReservations() {
 /** Render List Of Buildings **/
 void listBuildings(Buildings &buildings) {
     printf("\nId   Nombre  Aptos Basicos  Aptos Normales  Aptos Lujo\n");
-    getBuildings(buildings);
+    renderBuildings(buildings);
 }
 
 /** Render Edit Building **/
