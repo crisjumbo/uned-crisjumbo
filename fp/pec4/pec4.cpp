@@ -25,6 +25,26 @@ bool throwBuildingError(BuildingType building) {
   }
 }
 
+int checkApartmentsAvailability(BuildingType building, char apartment) {
+  int apartmentsAvailable;
+
+  switch(apartment){
+    case 'B':
+    apartmentsAvailable = building.basicApartments;
+    break;
+    case 'N':
+    apartmentsAvailable = building.normalApartments;
+    break;
+    case 'L':
+    apartmentsAvailable = building.luxuryApartments;
+    break;
+    default:
+    apartmentsAvailable = 0;
+  }
+
+  return apartmentsAvailable;
+}
+
 /********** Help Methods *********/
 void deleteBuilding(Buildings &buildings, int buildingId) {
     for(int i = 0; i < MAX_APPARMENTS; i++) {
@@ -89,6 +109,25 @@ void initializeBuildings(Buildings & buildings) {
   }
 }
 
+void renderAvailability(Buildings &buildings, DateType entranceDate,int stanceDays, int buildingId) {
+  int availableNormalApartments;
+  int availableBasicApartments;
+  int availableLuxuryApartments;
+
+  for(int i = 0; i < MAX_APPARMENTS; i++){
+    if(buildings[i].buildingId == buildingId){
+      availableBasicApartments = checkApartmentsAvailability(buildings[i], 'B');
+      availableNormalApartments = checkApartmentsAvailability(buildings[i], 'N');
+      availableLuxuryApartments = checkApartmentsAvailability(buildings[i], 'L');
+
+      printf("El edificio %s desde el %d/%d/%d y %d dias de estancia, tendria disponibles:\n", buildings[i].buildingName, entranceDate.day, entranceDate.month, entranceDate.year, stanceDays );
+      printf("\n");
+      printf("%d apartamentos basicos\n", availableBasicApartments);
+      printf("%d apartamentos normales\n", availableNormalApartments);
+      printf("%d apartamento de lujo\n", availableLuxuryApartments);
+    }
+  }
+}
 /********** Core Methods *********/
 
 /** Render Home Header **/
@@ -111,30 +150,28 @@ char renderMenu() {
 }
 
 /** Render Available Apartments **/
-void availableApartments() {
-    int buildingId;
-    int day;
-    int month;
-    int year;
-    int stayDays;
+void availableApartments(Buildings &buildings) {
+    int buildingId,stanceDays;
+    DateType entranceDate;
 
     printf("\nApartamentos Disponibles:\n");
     printf("    Identificador Edificio?");
     scanf("%d", &buildingId);
+    fflush(stdin);
     printf("    Fecha de Entrada: Dia?");
-    scanf("%d", &day);
+    scanf("%d", &entranceDate.day);
+    fflush(stdin);
     printf("    Fecha de Entrada: Mes?");
-    scanf("%d", &month);
+    scanf("%d", &entranceDate.month);
+    fflush(stdin);
     printf("    Fecha de Entrada: Annio?");
-    scanf("%d", &year);
+    scanf("%d", &entranceDate.year);
+    fflush(stdin);
     printf("    Dias de duracion de la estancia?");
-    scanf("%d", &stayDays);
+    scanf("%d", &stanceDays);
+    fflush(stdin);
     printf("\n");
-    printf("El edificio Apolo desde el 8/9/2025 y 15 dias de estancia, tendr�a disponibles:\n");
-    printf("\n");
-    printf("4 apartamentos basicos\n");
-    printf("2 apartamentos normales\n");
-    printf("1 apartamento de lujo\n");
+    renderAvailability(buildings, entranceDate, stanceDays, buildingId);
 }
 
 /** Render Reserve Apartment **/
@@ -257,7 +294,7 @@ void renderOption(char option, Buildings &buildings) {
             listBuildings(buildings);
             break;
         case 'A':
-            availableApartments();
+            availableApartments(buildings);
             break;
         case 'R':
             reserveApartment();
