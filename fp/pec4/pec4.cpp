@@ -2,6 +2,8 @@
 #include <string.h>
 #include "pec4.h"
 
+int reservationId = 0;
+
 /********** Util Methods *********/
 bool isBuildingEmpty(BuildingType building) {
   int totalApartments;
@@ -43,6 +45,63 @@ int checkApartmentsAvailability(BuildingType building, char apartment) {
   }
 
   return apartmentsAvailable;
+}
+
+bool isLeapYear(int year) {
+  if(((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)){
+    return true;
+  }
+  return false;
+}
+
+int daysInMonth(int month) {
+  switch(month){
+    case 1:
+    return 28;
+    break;
+    case 3:
+    case 5:
+    case 8:
+    case 10:
+    return 30;
+    break;
+    default:
+    return 31;
+  }
+}
+
+DateType getExitDate(DateType date, int stanceDays){
+  DateType exitDate;
+  bool isLeap;
+  int days;
+  int daysCount;
+  int month;
+
+  isLeap = isLeapYear(date.year);
+  days = 0;
+  daysCount = 0;
+  exitDate.day = 0;
+  exitDate.month = 0;
+  exitDate.year = date.year;
+
+  for(int i = 0; i < (date.month - 1); i++) { // days till last day of previous month
+    days = days + daysInMonth(i);
+  }
+  days = date.day + stanceDays;
+
+  for(int i = 0; i < MONTHS_IN_YEAR; i++) {
+    daysCount = daysCount + daysInMonth(i);
+    if( days < daysCount) {
+      daysCount = daysCount - daysInMonth(i);
+      exitDate.day = days - daysCount;
+      exitDate.month = i + 1;
+      exitDate.year = date.year;
+
+      return exitDate;
+    }
+  }
+
+  return exitDate;
 }
 
 /********** Help Methods *********/
@@ -128,6 +187,41 @@ void renderAvailability(Buildings &buildings, DateType entranceDate,int stanceDa
     }
   }
 }
+
+void renderReservationInfo(DateType exitDate, ReservationType reservation, Buildings &buildings, ReservationHead &head) {
+    char correctData;
+    ReservationHead aux;
+
+    reservation.next = NULL;
+    aux = head;
+    printf("        Datos de reserva");
+    printf("\n");
+    printf("    Numero de Reserva: %d/%d\n", reservationId + 1 ,reservation.entranceDate.year);
+    printf("    Edificio: %s\n", buildings[reservation.buildingId - 1].buildingName);
+    printf("    Referencia Apartamento:\n");
+    printf("    Fecha Entrada: %d/%d/%d\n", reservation.entranceDate.day, reservation.entranceDate.month, reservation.entranceDate.year);
+    printf("    Duracion estancia: %d\n", reservation.stanceDays);
+    printf("    Fecha salida: %d/%d/%d\n", exitDate.day, exitDate.month, exitDate.year);
+    printf("\n");
+    printf("Es correcta la operacion? (S/N)?\n");
+    scanf(" %c", &correctData);
+    fflush(stdin);
+
+    if(correctData == 'S') {
+      reservationId = reservationId + 1;
+
+      if(head == NULL) {
+        *head = reservation;
+      }
+      while(aux != NULL) {
+        aux = head->next;
+        if(head->next != NULL) {
+          head->next = &reservation;
+        }
+      }
+    }
+}
+
 /********** Core Methods *********/
 
 /** Render Home Header **/
@@ -145,6 +239,7 @@ char renderMenu() {
     printf("\n");
     printf("Teclear una opcion valida (E|L|A|R|M|S)?");
     scanf(" %c", &option);
+    fflush(stdin);
 
     return option;
 }
@@ -175,41 +270,44 @@ void availableApartments(Buildings &buildings) {
 }
 
 /** Render Reserve Apartment **/
-void reserveApartment() {
-    int buildingId;
-    char apartmentType;
+void reserveApartment(Buildings &buildings, ReservationHead &head) {
+    ReservationType reservation;
+    int totalAvailableApartments;
     char correctData;
-    int entryDay;
-    int entryMonth;
-    int entryYear;
-    int stayDays;
+    DateType exitDate;
 
     printf("\nReservar Apartamento:\n");
     printf("\n");
     printf("    Identificador Edificio?");
-    scanf("%d", &buildingId);
+    scanf("%d", &reservation.buildingId);
+    fflush(stdin);
     printf("    Tipo de Apartamento (B-Basico|N-Normal|L-Lujo)?");
-    scanf(" %c", &apartmentType);
+    scanf(" %c", &reservation.apartmentType);
+    fflush(stdin);
     printf("    Fecha de Entrada: Dia?");
-    scanf("%d", &entryDay);
+    scanf("%d", &reservation.entranceDate.day);
+    fflush(stdin);
     printf("    Fecha de Entrada: Mes?");
-    scanf("%d", &entryMonth);
+    scanf("%d", &reservation.entranceDate.month);
+    fflush(stdin);
     printf("    Fecha de Entrada: Annio?");
-    scanf("%d", &entryYear);
+    scanf("%d", &reservation.entranceDate.year);
+    fflush(stdin);
     printf("    Dias de duracion de la estancia?");
-    scanf("%d", &stayDays);
+    scanf("%d", &reservation.stanceDays);
+    fflush(stdin);
     printf("\n");
-    printf("        Datos de reserva");
-    printf("\n");
-    printf("    Numero de Reserva: 34/2025\n");
-    printf("    Edificio: Apolo\n");
-    printf("    Referencia Apartamento:\n");
-    printf("    Fecha Entrada:\n");
-    printf("    Duracion estancia:\n");
-    printf("    Fecha salida:\n");
-    printf("\n");
-    printf("Es correcta la operacion? (S/N)?\n");
-    scanf(" %c", &correctData);
+
+    totalAvailableApartments = checkApartmentsAvailability(buildings[reservation.buildingId - 1], 'B');
+    totalAvailableApartments = totalAvailableApartments + checkApartmentsAvailability(buildings[reservation.buildingId - 1], 'N');
+    totalAvailableApartments = totalAvailableApartments + checkApartmentsAvailability(buildings[reservation.buildingId - 1], 'L');
+    exitDate = getExitDate(reservation.entranceDate, reservation.stanceDays);
+
+    if(totalAvailableApartments == 0) {
+      printf("No hay apartamentos disponibles!");
+    } else {
+      renderReservationInfo(exitDate, reservation, buildings, head);
+    }
 }
 
 /** Render Month Reservation **/
@@ -223,10 +321,13 @@ void monthlyReservations() {
     printf("\n");
     printf("    Referencia Apartamento ?");
     scanf("%d", &buildingId);
-    printf("    Selecci�n Mes?");
+    fflush(stdin);
+    printf("    Seleccion Mes?");
     scanf("%d", &month);
-    printf("    Selecci�n A�o?");
+    fflush(stdin);
+    printf("    Seleccion Annio?");
     scanf("%d", &year);
+    fflush(stdin);
     printf("\n");
     printf("    Estado Mensual Apartamento:\n");
     printf("        Edificion:\n");
@@ -239,6 +340,7 @@ void monthlyReservations() {
     printf("\n");
     printf("Mostrar otro mes (S/N)?\n");
     scanf(" %c", &showAnotherMonth);
+    fflush(stdin);
 }
 
 /** Render List Of Buildings **/
@@ -258,18 +360,24 @@ void editBuilding(Buildings &buildings) {
     printf("\n");
     printf("Identificador (numero entre 1 y 5)?");
     scanf("%d", &building.buildingId);
+    fflush(stdin);
     printf("Nombre (entre 1 y 20 caracteres)?");
     scanf("%s", building.buildingName);
+    fflush(stdin);
     printf("Numero de Apartamentos Basicos?");
     scanf("%d", &building.basicApartments);
+    fflush(stdin);
     printf("Numero de Apartamentos Normales?");
     scanf("%d", &building.normalApartments);
+    fflush(stdin);
     printf("Numero de Apartamentos de Lujo?");
     scanf("%d", &building.luxuryApartments);
+    fflush(stdin);
     printf("\n");
     printf("IMPORTANTE: Esta opcion borra los datos anteriores.\n");
     printf("Son correctos los nuevos datos (S/N)?");
     scanf(" %c", &correctData);
+    fflush(stdin);
 
     toDeleteBuilding = isBuildingEmpty(building);
     buildingError = throwBuildingError(building);
@@ -285,7 +393,7 @@ void editBuilding(Buildings &buildings) {
 }
 
 /** Render Home Panel **/
-void renderOption(char option, Buildings &buildings) {
+void renderOption(char option, Buildings &buildings, ReservationHead &head) {
     switch(option) {
         case 'E':
             editBuilding(buildings);
@@ -297,7 +405,7 @@ void renderOption(char option, Buildings &buildings) {
             availableApartments(buildings);
             break;
         case 'R':
-            reserveApartment();
+            reserveApartment(buildings, head);
             break;
         case 'M':
             monthlyReservations();
@@ -313,11 +421,13 @@ void renderOption(char option, Buildings &buildings) {
 int main() {
     char option;
     Buildings buildings;
+    ReservationHead head;
 
+    head = NULL;
     initializeBuildings(buildings);
     do {
         option = renderMenu();
-        renderOption(option, buildings);
+        renderOption(option, buildings, head);
     } while(option != 'S');
 
     return 0;

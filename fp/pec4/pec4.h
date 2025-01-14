@@ -1,12 +1,23 @@
+#pragma once
+
 const int MAX_BUILDINGS = 5;
 const int MAX_APPARMENTS = 20;
 const int MAX_CHARACTERS = 20;
 const int BUILDING_PROPS = 5;
+const int MONTHS_IN_YEAR = 12;
+
+extern int reservationId;
 
 typedef char String[MAX_CHARACTERS];
 
 typedef enum Months {Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre};
 typedef enum WeekDays {Lunes, Martes, Miercoles, Jueves, Viernes, Sabado, Domingo};
+
+typedef struct DateType {
+  int day;
+  int month;
+  int year;
+};
 
 typedef struct BuildingType{
     int buildingId;
@@ -21,9 +32,7 @@ typedef BuildingType Buildings[MAX_BUILDINGS];
 
 typedef struct AvalabilityApartmentType {
   int buildingId;
-  int entranceDay;
-  int entranceMonth;
-  int entranceYear;
+  DateType entranceDate;
   int stanceDays;
 };
 
@@ -31,18 +40,12 @@ typedef struct ReservationType {
   int reservationId;
   int buildingId;
   char apartmentType;
-  int entranceDay;
-  int entranceMonth;
-  int entranceYear;
+  DateType entranceDate;
   int stanceDays;
   ReservationType *next;
 };
 
-typedef struct DateType {
-  int day;
-  int month;
-  int year;
-};
+typedef ReservationType *ReservationHead;
 
 /** TAD **/
 typedef struct MonthCalendar {
