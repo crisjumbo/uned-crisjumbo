@@ -4,10 +4,12 @@
 const int MAX_BUILDINGS = 5;
 const int MAX_APPARMENTS = 20;
 const int MAX_CHARACTERS = 20;
+const int BUILDING_PROPS = 5;
 
 typedef char String[MAX_CHARACTERS];
 
 typedef enum Months {Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre};
+typedef enum WeekDays {Lunes, Martes, Miercoles, Jueves, Viernes, Sabado, Domingo};
 
 typedef struct BuildingType{
     int buildingId;
@@ -52,8 +54,96 @@ typedef struct MonthCalendar {
   String apartmentRef;
 };
 
-/********** Methods *********/
+/********** Util Methods *********/
+bool isBuildingEmpty(BuildingType building) {
+  int totalApartments;
 
+  totalApartments = building.basicApartments + building.normalApartments + building.luxuryApartments;
+  if(totalApartments < 1){
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool throwBuildingError(BuildingType building) {
+  int totalApartments;
+
+  totalApartments = building.basicApartments + building.normalApartments + building.luxuryApartments;
+  if(totalApartments > MAX_APPARMENTS){
+    return true;
+  } else {
+    return false;
+  }
+}
+
+/********** Help Methods *********/
+void deleteBuilding(Buildings &buildings, int buildingId) {
+    for(int i = 0; i < MAX_APPARMENTS; i++) {
+    if (buildings[i].buildingId == buildingId) {
+      buildings[i].buildingId = buildingId;
+      buildings[i].isEmpty = true;
+      strcpy("", buildings[i].buildingName);
+      buildings[i].basicApartments = 0;
+      buildings[i].normalApartments = 0;
+      buildings[i].luxuryApartments = 0;
+    }
+  }
+}
+
+void addBuilding(Buildings &buildings, BuildingType building) {
+  for(int i = 0; i < MAX_APPARMENTS; i++) {
+    if (buildings[i].buildingId == building.buildingId) {
+      buildings[i].buildingId = building.buildingId;
+      buildings[i].isEmpty = false;
+      strcpy(building.buildingName,buildings[i].buildingName);
+      buildings[i].basicApartments = building.basicApartments;
+      buildings[i].normalApartments = building.normalApartments;
+      buildings[i].luxuryApartments = building.luxuryApartments;
+    }
+  }
+}
+
+void getBuildings(Buildings &buildings) {
+    for(int i = 0; i < MAX_BUILDINGS; i++) {
+      for(int j = 0; i < BUILDING_PROPS; j++) {
+        if(!buildings[i].isEmpty) {
+          switch(j) {
+            case 0:
+            printf("%d", buildings[i].buildingId);
+            break;
+            case 1:
+            printf("%s", buildings[i].buildingName);
+            break;
+            case 2:
+            printf("%d", buildings[i].basicApartments);
+            break;
+            case 3:
+            printf("%d", buildings[i].normalApartments);
+            break;
+            default:
+            printf("%d", buildings[i].luxuryApartments);
+          }
+        }
+      }
+      printf("\n");
+    }
+}
+
+void initializeBuildings(Buildings &buildings) {
+  for(int i = 0; i < MAX_BUILDINGS; i++) {
+    buildings[i].buildingId = i + 1;
+    buildings[i].isEmpty = true;
+    strcpy("", buildings[i].buildingName);
+    buildings[i].basicApartments = 0;
+    buildings[i].normalApartments = 0;
+    buildings[i].luxuryApartments = 0;
+  }
+}
+
+/********** Core Methods *********/
+
+/** Render Home Header **/
 char renderMenu() {
     char option;
 
@@ -72,6 +162,7 @@ char renderMenu() {
     return option;
 }
 
+/** Render Available Apartments **/
 void availableApartments() {
     int buildingId;
     int day;
@@ -86,18 +177,19 @@ void availableApartments() {
     scanf("%d", &day);
     printf("    Fecha de Entrada: Mes?");
     scanf("%d", &month);
-    printf("    Fecha de Entrada: A�o?");
+    printf("    Fecha de Entrada: Annio?");
     scanf("%d", &year);
     printf("    Dias de duracion de la estancia?");
     scanf("%d", &stayDays);
     printf("\n");
-    printf("El edificio Apolo desde el 8/9/2025 y 15 d�as de estancia, tendr�a disponibles:\n");
+    printf("El edificio Apolo desde el 8/9/2025 y 15 dias de estancia, tendria disponibles:\n");
     printf("\n");
-    printf("4 apartamentos b�sicos\n");
+    printf("4 apartamentos basicos\n");
     printf("2 apartamentos normales\n");
     printf("1 apartamento de lujo\n");
 }
 
+/** Render Reserve Apartment **/
 void reserveApartment() {
     int buildingId;
     char apartmentType;
@@ -117,7 +209,7 @@ void reserveApartment() {
     scanf("%d", &entryDay);
     printf("    Fecha de Entrada: Mes?");
     scanf("%d", &entryMonth);
-    printf("    Fecha de Entrada: A�o?");
+    printf("    Fecha de Entrada: Annio?");
     scanf("%d", &entryYear);
     printf("    Dias de duracion de la estancia?");
     scanf("%d", &stayDays);
@@ -135,6 +227,7 @@ void reserveApartment() {
     scanf(" %c", &correctData);
 }
 
+/** Render Month Reservation **/
 void monthlyReservations() {
     char showAnotherMonth;
     int buildingId;
@@ -145,9 +238,9 @@ void monthlyReservations() {
     printf("\n");
     printf("    Referencia Apartamento ?");
     scanf("%d", &buildingId);
-    printf("    Selecci�n Mes?");
+    printf("    Seleccion Mes?");
     scanf("%d", &month);
-    printf("    Selecci�n A�o?");
+    printf("    Seleccion Annio?");
     scanf("%d", &year);
     printf("\n");
     printf("    Estado Mensual Apartamento:\n");
@@ -156,120 +249,64 @@ void monthlyReservations() {
     printf("Reserva 21/2025: Fecha entrada 27/8/2025 y de 10 d�as\n");
     printf("Reserva 21/2025: Fecha entrada 27/8/2025 y de 10 d�as\n");
     printf("Reserva 21/2025: Fecha entrada 27/8/2025 y de 10 d�as\n");
-    printf("Total d�as reservados del mes: xx dias\n");
-    printf("Total d�as libres del mes: xx dias\n");
+    printf("Total dias reservados del mes: xx dias\n");
+    printf("Total dias libres del mes: xx dias\n");
     printf("\n");
     printf("Mostrar otro mes (S/N)?\n");
     scanf(" %c", &showAnotherMonth);
 }
 
-void addBuilding(BuildingNode head, BuildingType building) {
-    BuildingNode newNode, current;
-    int apartmentsBuilding = building.basicApartments + building.normalApartments + building.luxuryApartments;
-    int apartmentsBuildings = 0;
-    int totalApartments = 0;
-    int i = 0;
-    int j = 0;
-
-//count total appartments
-    *current = *head;
-    while(current != NULL) {
-        apartmentsBuildings = apartmentsBuildings + (current->building.basicApartments + current->building.normalApartments + current->building.luxuryApartments);
-        current = current->next;
-        i++;
-    };
-    totalApartments = apartmentsBuilding + apartmentsBuildings;
-    free(current);
-
-//condition if there is full capacity
-    if (totalApartments > 20 || i == 5) {
-        printf("Full capacity, please remove or edit building\n");
-        return;
-    };
-
-//add building to the linked list
-    newNode = new Node;
-    newNode->building = building;
-    newNode->next = NULL;
-    newNode->prev = NULL;
-
-    if(head == NULL) {
-        *head = *newNode;
-        free(newNode);
-    } else {
-        *current = *head;
-        while(current->next != NULL) {
-            if(current->building.buildingId == building.buildingId) {
-                current->building = building;
-                free(newNode);
-                return;
-            };
-            current = current->next;
-        };
-        if (current->building.buildingId != building.buildingId) {
-            current->next = newNode;
-            newNode->prev = current;
-            free(newNode);
-        };
-
-        free(current);
-    };
-}
-
-void getBuildings(BuildingNode head) {
-    BuildingNode current;
-
-    *current = *head;
-    while(current != NULL) {
-        printf("\nId   Nombre  Aptos Basicos  Aptos Normales  Aptos Lujo\n");
-        printf(" %d   ", current->building.buildingId);
-        printf("%s   ", current->building.buildingName);
-        printf(" %d   ", current->building.basicApartments);
-        printf(" %d   ", current->building.normalApartments);
-        printf(" %d   ", current->building.luxuryApartments);
-        current = current->next;
-    };
-    delete current;
-}
-
-void listBuildings(BuildingNode head) {
+/** Render List Of Buildings **/
+void listBuildings(Buildings &buildings) {
     printf("\nId   Nombre  Aptos Basicos  Aptos Normales  Aptos Lujo\n");
-    getBuildings(head);
+    getBuildings(buildings);
 }
 
-void editBuilding(BuildingNode head) {
+/** Render Edit Building **/
+void editBuilding(Buildings &buildings) {
     BuildingType building;
     char correctData;
+    bool toDeleteBuilding;
+    bool buildingError;
 
     printf("\nEditar Edificio:\n");
     printf("\n");
-    printf("Identificador (n�mero entre 1 y 5)?");
+    printf("Identificador (numero entre 1 y 5)?");
     scanf("%d", &building.buildingId);
     printf("Nombre (entre 1 y 20 caracteres)?");
     scanf("%s", building.buildingName);
-    printf("N�mero de Apartamentos B�sicos?");
+    printf("Numero de Apartamentos Basicos?");
     scanf("%d", &building.basicApartments);
-    printf("N�mero de Apartamentos Normales?");
+    printf("Numero de Apartamentos Normales?");
     scanf("%d", &building.normalApartments);
-    printf("N�mero de Apartamentos de Lujo?");
+    printf("Numero de Apartamentos de Lujo?");
     scanf("%d", &building.luxuryApartments);
     printf("\n");
-    printf("IMPORTANTE: Esta opci�n borra los datos anteriores.\n");
+    printf("IMPORTANTE: Esta opcion borra los datos anteriores.\n");
     printf("Son correctos los nuevos datos (S/N)?");
     scanf(" %c", &correctData);
 
+    toDeleteBuilding = isBuildingEmpty(building);
+    buildingError = throwBuildingError(building);
     if(correctData == 'S') {
-        addBuilding(head, building);
+      if(toDeleteBuilding) {
+        deleteBuilding(buildings, building.buildingId);
+      } else if (buildingError) {
+        printf("No se pudo anniadir el Edificio");
+      } else {
+        addBuilding(buildings, building);
+      }
     };
 }
 
-void renderOption(char option, BuildingNode head) {
+/** Render Home Panel **/
+void renderOption(char option, Buildings &buildings) {
     switch(option) {
         case 'E':
-            editBuilding(head);
+            editBuilding(buildings);
             break;
         case 'L':
-            listBuildings(head);
+            listBuildings(buildings);
             break;
         case 'A':
             availableApartments();
@@ -283,21 +320,20 @@ void renderOption(char option, BuildingNode head) {
         case 'S':
             break;
         default:
-            printf("Opci�n no v�lida\n");
+            printf("Opcion no valida\n");
     }
 }
 
 /********** UI Panel **********/
 int main() {
     char option;
-    BuildingNode head;
-    head = NULL;
+    Buildings buildings;
 
+    initializeBuildings(buildings);
     do {
         option = renderMenu();
-        renderOption(option, head);
+        renderOption(option, buildings);
     } while(option != 'S');
 
     return 0;
 }
-
