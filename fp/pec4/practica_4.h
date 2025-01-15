@@ -12,6 +12,7 @@ typedef char String[MAX_CHARACTERS];
 
 typedef enum Months {Enero, Febrero, Marzo, Abril, Mayo, Junio, Julio, Agosto, Septiembre, Octubre, Noviembre, Diciembre};
 typedef enum WeekDays {Lunes, Martes, Miercoles, Jueves, Viernes, Sabado, Domingo};
+typedef enum ApartmentService {B, L, N};
 
 typedef struct DateType {
   int day;
@@ -46,6 +47,16 @@ typedef struct ReservationType {
 };
 
 typedef ReservationType *ReservationHead;
+
+typedef struct ApartmentType {
+  String apartmentRef;
+  ApartmentService type;
+  bool available;
+
+  ApartmentType *next;
+};
+
+typedef ApartmentType *ApartmentHead;
 
 /** TAD **/
 typedef struct MonthCalendar {

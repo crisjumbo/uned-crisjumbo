@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "pec4.h"
+#include "practica_4.h"
 
 int reservationId = 0;
 
