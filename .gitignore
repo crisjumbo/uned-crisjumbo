@@ -1,0 +1,40 @@
+### MacOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+### IDEs (IntelliJ & VS Code) ###
+.idea/
+*.iml
+.vscode/
+*.code-workspace
+
+### C Language ###
+# Executables
+a.out
+*.exe
+*.out
+# Debug symbols (macOS specific)
+*.dSYM/
+
+### Java Language ###
+*.class
+*.jar
+*.war
+*.ear
+
+# Build directories
+target/
+bin/
+build/
+
+### Project Specific Patterns ###
+# Based on your file list
+EPED/**/a.out
+POO/**/a.out
+fp/**/*.out
+fp/**/*.dSYM/
+pec2.dSYM/
+
