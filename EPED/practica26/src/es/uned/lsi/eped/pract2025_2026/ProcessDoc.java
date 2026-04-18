@@ -23,11 +23,16 @@ public class ProcessDoc {
     /* Incrementa en 1 la frecuencia de la palabra w en el documento */    
     public void addWord(String w) {
         IteratorIF<Pair_S_F> iterator;
-        
-        if (((CharSequence) words).isEmpty()) {
-        	words.add(new Pair_S_F(w, 1));
-        } else {
-        	iterator = words.iterator();
+        iterator = this.words.iterator();
+        iterator.reset();
+        	
+        while(iterator.hasNext()) {
+        	Pair_S_F pair;
+        	pair = iterator.getNext();
+        	
+        	if(pair.getString().equals(w)) {
+        		pair.incFrequency();
+        	}
         }
     }
 }

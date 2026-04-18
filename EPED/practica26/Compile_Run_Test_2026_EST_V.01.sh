@@ -7,7 +7,8 @@ echo Se va a compilar la practica 2025\/2026 con las dependencias y restriccione
 SRC_DIR=$PWD/src
 BIN_DIR=/bin
 MAIN=es/uned/lsi/eped/pract2025_2026/Main
-JAVA_HOME_JDK=/usr/lib/jvm/default-java
+JAVA_HOME_JDK=$(/usr/libexec/java_home)
+# /usr/lib/jvm/default-java
 TMP_FOLDER=$PWD/juego_de_pruebas_2026/tmp
 
 if [ -z "$JAVA_HOME_JDK" ] 
