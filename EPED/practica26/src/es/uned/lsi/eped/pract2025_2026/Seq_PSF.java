@@ -21,8 +21,9 @@ public class Seq_PSF {
     public void add(Pair_S_F pair) {
     	int pos;
     	
+    	pos = 1;
     	if (this.seqStringFreq.isEmpty()) {
-    		((List<Pair_S_F>) this.seqStringFreq).insert(1, pair);
+    		((List<Pair_S_F>) this.seqStringFreq).insert(pos, pair);
     	} else {
     		pos = this.seqStringFreq.size() + 1;
     		((List<Pair_S_F>) this.seqStringFreq).insert(pos, pair);

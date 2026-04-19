@@ -23,16 +23,28 @@ public class ProcessDoc {
     /* Incrementa en 1 la frecuencia de la palabra w en el documento */    
     public void addWord(String w) {
         IteratorIF<Pair_S_F> iterator;
+        boolean found;
+        
         iterator = this.words.iterator();
-        iterator.reset();
-        	
-        while(iterator.hasNext()) {
-        	Pair_S_F pair;
-        	pair = iterator.getNext();
-        	
-        	if(pair.getString().equals(w)) {
-        		pair.incFrequency();
-        	}
+        found = false;
+        
+        if (iterator != null) {
+            while(iterator.hasNext()) {
+            	Pair_S_F pair;
+            	
+            	pair = iterator.getNext();
+            	
+            	if(pair.getString().equals(w)) {
+            		pair.incFrequency();
+            		found = true;
+            	}
+            	if (!iterator.hasNext() & !found) {
+            		this.words.add(new Pair_S_F(w, 1));
+            		found = true;
+            	}
+            }
+        } else {
+            this.words.add(new Pair_S_F(w, 1));
         }
     }
 }
