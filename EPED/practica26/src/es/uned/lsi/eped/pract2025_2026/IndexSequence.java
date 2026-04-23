@@ -39,44 +39,39 @@ public class IndexSequence implements IndexIF {
     public void insertIndex(String p, String doc_id, int freq) {
 		Seq_PSF seqPSF;
 		Pair_S_F pairSF;
+		IteratorIF<Pair_W_SeqPSF> listIterator;
+		SequenceIF<Pair_W_SeqPSF> auxIndex;
+		int insertPosition;
 
 		pairSF = new Pair_S_F(doc_id, freq);
 		seqPSF = new Seq_PSF();
     	seqPSF.add(pairSF);
-    	if (this.index.isEmpty()) {
-    		((List<Pair_W_SeqPSF>) this.index).insert(1, new Pair_W_SeqPSF(p, seqPSF));
-    	}else {
-    		IteratorIF<Pair_W_SeqPSF> iteratorMain;
-    		int counterMain;
+		auxIndex = new List<Pair_W_SeqPSF>();
 
-    		iteratorMain = this.index.iterator();
-    		iteratorMain.reset();
-    		counterMain = 0;
-    		// Recorremos la secuencia de palabras para ver si el parametro "p" coincide con la secuencia. SI iterator es no nulo
-    		if (iteratorMain != null) {
-        		while(iteratorMain.hasNext()) {
-        			Pair_W_SeqPSF currentWPair;
-        			
-        			counterMain++;
-        			currentWPair = iteratorMain.getNext();
-        			
-        			// Si la palabra en secuencia es igual, "p" se anade despues de la palabra
-        			if (currentWPair.getWord().equals(p) ) {
-						currentWPair.getSeqPSR().add(pairSF);
-        			} else {
-        				// Si "p" es mayor a la palabra de secuencia se inserta como la siguiente palabra en secuencia
-        				if (currentWPair.getWord().compareTo(p) > 0) {
-            				// Anade el par palabra en el siguiente item de la secuencia recorrida
-							// TODO: ultima palabra crea una instancia nueva de Pair_W_SeqPSF y la inserta
-        					((List<Pair_W_SeqPSF>) this.index).insert(counterMain + 1,new Pair_W_SeqPSF(p, seqPSF));
-        					
-        				// Si "p" es menor a la palabra en secuencia, se insterta si es la ultima palabra en secuencia
-        				}else if(currentWPair.getWord().compareTo(p) < 0 & !iteratorMain.hasNext()) {
-        					((List<Pair_W_SeqPSF>) this.index).insert(counterMain,new Pair_W_SeqPSF(p, seqPSF));
-        				}
-        			}
-        		}
-    		}
+    	if (this.index.isEmpty()) {
+			insertPosition = 1;
+    		((List<Pair_W_SeqPSF>) this.index).insert(insertPosition, new Pair_W_SeqPSF(p, seqPSF));
+    	}else {
+			insertPosition = 0;
+			listIterator = this.index.iterator();
+			while (listIterator.hasNext()) {
+				Pair_W_SeqPSF currentPair;
+				
+				currentPair = listIterator.getNext();
+				if (currentPair.getWord().compareTo(p) < 0) {
+					insertPosition++;
+				}
+				if (currentPair.getWord().equals(p)) {
+					currentPair.getSeqPSR().add(pairSF);
+					return;
+				}
+			}
+
+			if (insertPosition == this.index.size()) {
+				((List<Pair_W_SeqPSF>) this.index).insert(this.index.size() + 1, new Pair_W_SeqPSF(p, seqPSF));
+			} else if (insertPosition > 1 && insertPosition < this.index.size()) {
+				((List<Pair_W_SeqPSF>) this.index).insert(insertPosition, new Pair_W_SeqPSF(p, seqPSF));
+			}
     	}
     	
     }
