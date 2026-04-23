@@ -14,6 +14,7 @@ public class Seq_PSF {
 
     /* Devuelve un iterador de la secuencia */
     public IteratorIF<Pair_S_F> iterator() {
+        System.out.println("DEBUG Seq_PSF: iterator() called");
         return this.seqStringFreq.iterator();
     }
     

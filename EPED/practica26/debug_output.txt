@@ -1,0 +1,4 @@
+documento documento_1 hello world hello: Índice actualizado con todas las palabras del documento.
+documento documento_2 hello world world: Índice actualizado con todas las palabras del documento.
+palabra hello: [(documento_2,1)]
+palabra world: [(documento_1,1) (documento_2,2)]

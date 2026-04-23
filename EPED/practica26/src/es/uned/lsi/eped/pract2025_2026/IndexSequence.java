@@ -16,6 +16,7 @@ public class IndexSequence implements IndexIF {
     	IteratorIF<Pair_W_SeqPSF> iterator;
     	Pair_W_SeqPSF pair;
     	Seq_PSF foundPSF;
+
     	
     	iterator = this.index.iterator();
     	pair = new Pair_W_SeqPSF(p);
@@ -23,10 +24,10 @@ public class IndexSequence implements IndexIF {
     	
     	if (iterator != null) {
         	while(iterator.hasNext()) {
-        		pair = iterator.getNext();
-        		
+        		pair = iterator.getNext();        		
         		if(pair.getWord().equals(p)) {
         			foundPSF = pair.getSeqPSR();
+					return foundPSF;
         		}
         	}
     	}
@@ -36,18 +37,18 @@ public class IndexSequence implements IndexIF {
     
 
     public void insertIndex(String p, String doc_id, int freq) {
+		Seq_PSF seqPSF;
+		Pair_S_F pairSF;
+
+		pairSF = new Pair_S_F(doc_id, freq);
+		seqPSF = new Seq_PSF();
+    	seqPSF.add(pairSF);
     	if (this.index.isEmpty()) {
-    		// Si la secuencia de frecuencia de palabras esta vacia.
-    		// Inserta la secuencia de frecuencia con la palabra
-    		Seq_PSF seqPSF;
-    		
-    		seqPSF = new Seq_PSF();
-    		seqPSF.add(new Pair_S_F(doc_id, freq));
     		((List<Pair_W_SeqPSF>) this.index).insert(1, new Pair_W_SeqPSF(p, seqPSF));
     	}else {
     		IteratorIF<Pair_W_SeqPSF> iteratorMain;
     		int counterMain;
-    		
+
     		iteratorMain = this.index.iterator();
     		iteratorMain.reset();
     		counterMain = 0;
@@ -61,24 +62,16 @@ public class IndexSequence implements IndexIF {
         			
         			// Si la palabra en secuencia es igual, "p" se anade despues de la palabra
         			if (currentWPair.getWord().equals(p) ) {
-        				Seq_PSF seqPSF = currentWPair.getSeqPSR();
-        				
-        				seqPSF.add(new Pair_S_F(doc_id, freq));
-        				((List<Pair_W_SeqPSF>) this.index).insert(counterMain + 1,new Pair_W_SeqPSF(p, seqPSF));
+						currentWPair.getSeqPSR().add(pairSF);
         			} else {
-        				Seq_PSF seqPSF = currentWPair.getSeqPSR();
-        				
         				// Si "p" es mayor a la palabra de secuencia se inserta como la siguiente palabra en secuencia
         				if (currentWPair.getWord().compareTo(p) > 0) {
-            				
-        					// Anade el par frequencia al final de la subsecuencia
-            				seqPSF.add(new Pair_S_F(doc_id, freq));
             				// Anade el par palabra en el siguiente item de la secuencia recorrida
+							// TODO: ultima palabra crea una instancia nueva de Pair_W_SeqPSF y la inserta
         					((List<Pair_W_SeqPSF>) this.index).insert(counterMain + 1,new Pair_W_SeqPSF(p, seqPSF));
         					
         				// Si "p" es menor a la palabra en secuencia, se insterta si es la ultima palabra en secuencia
         				}else if(currentWPair.getWord().compareTo(p) < 0 & !iteratorMain.hasNext()) {
-        					seqPSF.add(new Pair_S_F(doc_id, freq));
         					((List<Pair_W_SeqPSF>) this.index).insert(counterMain,new Pair_W_SeqPSF(p, seqPSF));
         				}
         			}
