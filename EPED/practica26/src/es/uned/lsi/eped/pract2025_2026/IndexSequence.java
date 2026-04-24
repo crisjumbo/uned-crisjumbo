@@ -40,19 +40,17 @@ public class IndexSequence implements IndexIF {
 		Seq_PSF seqPSF;
 		Pair_S_F pairSF;
 		IteratorIF<Pair_W_SeqPSF> listIterator;
-		SequenceIF<Pair_W_SeqPSF> auxIndex;
-		int insertPosition;
+		int insertPosition; 
 
 		pairSF = new Pair_S_F(doc_id, freq);
 		seqPSF = new Seq_PSF();
     	seqPSF.add(pairSF);
-		auxIndex = new List<Pair_W_SeqPSF>();
 
     	if (this.index.isEmpty()) {
 			insertPosition = 1;
     		((List<Pair_W_SeqPSF>) this.index).insert(insertPosition, new Pair_W_SeqPSF(p, seqPSF));
     	}else {
-			insertPosition = 0;
+			insertPosition = 1;
 			listIterator = this.index.iterator();
 			while (listIterator.hasNext()) {
 				Pair_W_SeqPSF currentPair;
@@ -67,10 +65,12 @@ public class IndexSequence implements IndexIF {
 				}
 			}
 
-			if (insertPosition == this.index.size()) {
+			if (insertPosition == this.index.size() + 1) {
 				((List<Pair_W_SeqPSF>) this.index).insert(this.index.size() + 1, new Pair_W_SeqPSF(p, seqPSF));
-			} else if (insertPosition > 1 && insertPosition < this.index.size()) {
-				((List<Pair_W_SeqPSF>) this.index).insert(insertPosition, new Pair_W_SeqPSF(p, seqPSF));
+			} else if (insertPosition > 1 && insertPosition < this.index.size() + 1) {
+				((List<Pair_W_SeqPSF>) this.index).insert(insertPosition + 1, new Pair_W_SeqPSF(p, seqPSF));
+			} else if (insertPosition == 1) {
+				((List<Pair_W_SeqPSF>) this.index).insert(insertPosition + 1, new Pair_W_SeqPSF(p, seqPSF));
 			}
     	}
     	
@@ -86,9 +86,10 @@ public class IndexSequence implements IndexIF {
     	auxIndex = new List<Pair_W_SeqPSF>();
     	iteratorMain = this.index.iterator();
 		counter = 0;
+
     	
     	while(iteratorMain.hasNext()) {
-    		Pair_W_SeqPSF currentWPair;
+			Pair_W_SeqPSF currentWPair;
     		
     		counter++;
     		currentWPair = iteratorMain.getNext(); 

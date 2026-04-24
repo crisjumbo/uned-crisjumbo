@@ -2,4 +2,5 @@ documento documento_1 hello hermion world hello he: Índice actualizado con toda
 documento documento_2 hello world he he world: Índice actualizado con todas las palabras del documento.
 palabra hello: [(documento_1,2) (documento_2,1)]
 palabra world: [(documento_1,1) (documento_2,2)]
-listado he: [(hello,[(documento_1,2) (documento_2,1)]) (hermion,[(documento_1,1)])]
+listado he: [(hello,[(documento_1,2) (documento_2,1)]) (he,[(documento_1,1) (documento_2,2)]) (hermion,[(documento_1,1)])]
+palabra he: [(documento_1,1) (documento_2,2)]
