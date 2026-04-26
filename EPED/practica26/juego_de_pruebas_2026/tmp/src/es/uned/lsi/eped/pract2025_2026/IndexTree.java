@@ -55,49 +55,73 @@ public class IndexTree implements IndexIF {
     	infoGTree = new GTree<Node>();
     	nodeInfo = new NodeInfo(new Pair_S_F(doc_id, freq));
     	infoGTree.setRoot(nodeInfo);
-    	treeIterator = this.index.getChildren().iterator();
-    	counter = 0;
     	
-    	while(treeIterator.hasNext()) {
-    		GTreeIF<Node> auxGTree;
+    	if (this.index == null ) {
+    		GTreeIF<Node> tmpGTree;
     		
-    		// Change the iterator to the children that match character
-    		auxGTree = treeIterator.getNext();
-    		if (((NodeInner) auxGTree.getRoot()).getLetter() == p.charAt(counter) & auxGTree.getRoot().getNodeType() == Node.NodeType.INNER) {
-    			treeIterator = auxGTree.getChildren().iterator();
+    		this.index = new GTree<Node>();
+    		this.index.setRoot(new NodeRoot());
+    		counter = 0;
+    		this.index.addChild(1, infoGTree);
+    		tmpGTree = new GTree<Node>();
+    		
+    		while (counter < p.length()) {
+    			char auxChar = p.charAt(counter);
+    			
+    			tmpGTree.clear();
+    			tmpGTree.setRoot(new NodeInner(auxChar));
+    			infoGTree.addChild(1, tmpGTree);
+    			infoGTree = infoGTree.getChild(1);
     			counter++;
-    			// If reached last character insert children info node
     			if (counter == p.length()) {
-    				auxGTree.addChild(1, infoGTree);
+    				infoGTree.setRoot(nodeInfo);
     				break;
     			}
-    		// Add infoGTree if no character match
-    		} else if(!treeIterator.hasNext() & auxGTree.getRoot().getNodeType() == Node.NodeType.INNER) {
-    			// build infoGTree
-    			GTreeIF<Node> tmpGTree;
-    			
-    			tmpGTree = new GTree<Node>();
-    			auxGTree.addChild(auxGTree.getNumChildren() + 1, infoGTree);
-    			// New cycle to insert infoGTree
-    			// Cycle to build infoGTree
-    			while (counter < p.length()) {
-    				char auxChar = p.charAt(counter);
-    				
-    				tmpGTree.setRoot(new NodeInner(auxChar));
-    				infoGTree.addChild(1, tmpGTree);
-    				tmpGTree.clear();
-    				infoGTree = infoGTree.getChild(1);
-    				counter++;
-    				if (counter == p.length()) {
-    					infoGTree.setRoot(nodeInfo);
-    					break;
-    				}
-    			}
     		}
+    	} else if (!this.index.getChildren().isEmpty()) {
+        	treeIterator = this.index.getChildren().iterator();
+        	counter = 0;
+        	
+        	while(treeIterator.hasNext()) {
+        		GTreeIF<Node> auxGTree;
+        		
+        		// Change the iterator to the children that match character
+        		auxGTree = treeIterator.getNext();
+        		if (auxGTree.getRoot().getNodeType() == Node.NodeType.INNER) {
+            		if (((NodeInner) auxGTree.getRoot()).getLetter() == p.charAt(counter)) {
+            			treeIterator = auxGTree.getChildren().iterator();
+            			counter++;
+            			// If reached last character insert children info node
+            			if (counter == p.length()) {
+            				auxGTree.addChild(1, infoGTree);
+            				break;
+            			}
+            		// Add infoGTree if no character match
+            		} else if(!treeIterator.hasNext()) {
+            			// build infoGTree
+            			GTreeIF<Node> tmpGTree;
+            			
+            			tmpGTree = new GTree<Node>();
+            			auxGTree.addChild(auxGTree.getNumChildren() + 1, infoGTree);
+            			// New cycle to insert infoGTree
+            			// Cycle to build infoGTree
+            			while (counter < p.length()) {
+            				char auxChar = p.charAt(counter);
+            				
+            				tmpGTree.setRoot(new NodeInner(auxChar));
+            				infoGTree.addChild(1, tmpGTree);
+            				tmpGTree.clear();
+            				infoGTree = infoGTree.getChild(1);
+            				counter++;
+            				if (counter == p.length()) {
+            					infoGTree.setRoot(nodeInfo);
+            					break;
+            				}
+            			}
+            		}
+        		}
+        	}
     	}
-    	
-    	
-    	
     }
     
     public IteratorIF<Pair_W_SeqPSF> prefixIterator(String prefix) {

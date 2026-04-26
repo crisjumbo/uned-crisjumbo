@@ -27,22 +27,23 @@ public class ProcessDoc {
         
         iterator = this.words.iterator();
         found = false;
-
         
         if (iterator != null) {
             while(iterator.hasNext()) {
-                Pair_S_F pair;
-                
-                pair = iterator.getNext();
-                
-                if(pair.getString().equals(w)) {
-                    pair.incFrequency();
-                    found = true;
-                }
+            	Pair_S_F pair;
+            	
+            	pair = iterator.getNext();
+            	
+            	if(pair.getString().equals(w)) {
+            		pair.incFrequency();
+            		found = true;
+            	}
             }
+            
             if (!found) {
-                this.words.add(new Pair_S_F(w, 1));
+            	this.words.add(new Pair_S_F(w, 1));
             }
         }
+        
     }
 }

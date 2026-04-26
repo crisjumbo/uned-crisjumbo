@@ -38,15 +38,12 @@ public class ProcessDoc {
             		pair.incFrequency();
             		found = true;
             	}
-            	if (!iterator.hasNext() & !found) {
-            		this.words.add(new Pair_S_F(w, 1));
-            		found = true;
-            	}
             }
-        } else {
-            if(!found) {
+            
+            if (!found) {
             	this.words.add(new Pair_S_F(w, 1));
             }
         }
+        
     }
 }
