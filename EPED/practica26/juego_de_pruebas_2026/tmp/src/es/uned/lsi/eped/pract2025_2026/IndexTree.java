@@ -11,33 +11,33 @@ public class IndexTree implements IndexIF {
     protected GTreeIF<Node> index;
     
     public Seq_PSF retrieveIndex(String p) {
-    	Seq_PSF seqPSF;
+    	Seq_PSF emptyPSF;
+    	emptyPSF = new Seq_PSF();
     	
-    	seqPSF = new Seq_PSF();
     	// Comprobamos si el index es nulo o vacio
     	if (this.index == null || this.index.isEmpty()) {
-    		return seqPSF;
+    		return emptyPSF;
     	}
     	
     	GTreeIF<Node> currentGTree = this.index;
     	IteratorIF<GTreeIF<Node>> leafIterator;
     	
-    	// Buscamos cada caracter por cada nivel del arbol
+    	// Comparamos cada caracter de la palabra en cada nivel de arbol
     	for (int i = 0; i < p.length(); i++) {
     		char auxChar;
     		GTreeIF<Node> nextGTree;
-    		IteratorIF<GTreeIF<Node>> childrenTreeIterator;
+    		IteratorIF<GTreeIF<Node>> childrenIterator;
     		
     		auxChar= p.charAt(i);
     		nextGTree = null;
-    		childrenTreeIterator = currentGTree.getChildren().iterator();
+    		childrenIterator = currentGTree.getChildren().iterator();
     		
     		// Buscamos el caracter dentro de los hijos del nodo actual
-    		while (childrenTreeIterator.hasNext()) {
+    		while (childrenIterator.hasNext()) {
     			GTreeIF<Node> childGTree;
     			Node childRoot;
     			
-    			childGTree = childrenTreeIterator.getNext();
+    			childGTree = childrenIterator.getNext();
     			childRoot = childGTree.getRoot();
     			
     			if (childRoot.getNodeType() == Node.NodeType.INNER) {
@@ -47,30 +47,32 @@ public class IndexTree implements IndexIF {
     			}
     		}
     		
+    		// Si la palabra no existe en el arbol, devolvemos una secuencia vacia
     		if (nextGTree == null) {
-    			return seqPSF;
+    			return emptyPSF;
     		}
+    		
+    		// Descendemos por el hijo que hace match con el caracter de la palabra
     		currentGTree = nextGTree;
     	}
     	
-    	// Una vez en el penultimo nodo de la rama, buscamos el nodo hoja INFO
     	leafIterator = currentGTree.getChildren().iterator();
+    	// Iteramos en el nodo correspondiente al ultimo caracter de la palabra
     	while (leafIterator.hasNext()) {
     		GTreeIF<Node> childGTree;
     		
     		childGTree = leafIterator.getNext();
     		
+    		// Buscamos el nodo info con la secuencia
     		if (childGTree.getRoot().getNodeType() == Node.NodeType.INFO) {
     			return ((NodeInfo) childGTree.getRoot()).getSeqPSR();
     		}
     	}
     	
-    	return seqPSF;
+    	return emptyPSF;
     }
     
-    // Recorrer las lista de arboles, que coincidan las raices con cada palabra e insertar en children 1 el par
     public void insertIndex(String p, String doc_id, int freq) {
-    	
     	// Cuando index sea null, anadimos su nodo raiz
     	if (this.index == null) {
     		this.index = new GTree<Node>();
@@ -97,7 +99,7 @@ public class IndexTree implements IndexIF {
     		nextGTree = null;
     		childrenIterator = currentGTree.getChildren().iterator();
     		
-    		// Iteramos en cada hijo del nodo padre
+    		// Iteramos en cada hijo del nodo padre con el caracter del nivel
     		while (childrenIterator.hasNext()) {
     			GTreeIF<Node> childGTree;
     			Node root;
@@ -105,18 +107,19 @@ public class IndexTree implements IndexIF {
     			childGTree = childrenIterator.getNext();
     			root = childGTree.getRoot();
     			
-    			// Si el caracter coincide con el nodo, saltamos al siguiente nivel de la rama
     			if (root.getNodeType() == Node.NodeType.INNER) {
     				char currentChar;
     				
     				currentChar = ((NodeInner) root).getLetter();
     				
+    				// Si el caracter coincide con el nodo, saltamos al siguiente nivel de la rama
     				if (currentChar == auxChar) {
     					nextGTree = childGTree;
     					found = true;
     					break;
     				}
     				
+    				// Si el caracter del nodo es mayor al del nivel, terminamos el bucle con la posicion dentro de los hijos
     				if (currentChar > auxChar) {
     					break;
     				}
@@ -125,7 +128,7 @@ public class IndexTree implements IndexIF {
     			counter++;
     		}
     		
-    		// Si no hay mas nodos, creamos uno nuevo con el caracter actual
+    		// Si no hay mas nodos en los hijos, creamos uno nuevo con el caracter actual
     		if (!found) {
     			GTreeIF<Node> newGTree;
     			
@@ -135,6 +138,7 @@ public class IndexTree implements IndexIF {
     			nextGTree = newGTree;
     		}
     		
+    		// Pasamos el iterador al siguiente nivel
     		currentGTree = nextGTree;
     		
     	}
@@ -174,6 +178,7 @@ public class IndexTree implements IndexIF {
     	
     	childrenIterator = currentGTree.getChildren().iterator();
     	
+    	// Iteramos en los nodos hijos del nodo padre
     	while(childrenIterator.hasNext()) {
     		GTreeIF<Node> childGTree;
     		Node root;
@@ -181,8 +186,10 @@ public class IndexTree implements IndexIF {
     		childGTree = childrenIterator.getNext();
     		root = childGTree.getRoot();
     		
+    		// Si hay un nodo info, lo metemos en cola
     		if (root.getNodeType() == Node.NodeType.INFO) {
     			wordPairs.enqueue(new Pair_W_SeqPSF(currentWord, ((NodeInfo) root).getSeqPSR()));
+    		// Si no hay nodo y es inner, buscamos dentro de sus hijos de manera recursiva
     		} else if (root.getNodeType() == Node.NodeType.INNER) {
     			char auxChar;
     			
@@ -193,6 +200,7 @@ public class IndexTree implements IndexIF {
     }
     
     public IteratorIF<Pair_W_SeqPSF> prefixIterator(String prefix) {
+    	// Si el indice es nulo o vacio, devolvemos null
     	if (this.index == null || this.index.isEmpty()) {
     		return null;
     	}
@@ -202,6 +210,7 @@ public class IndexTree implements IndexIF {
     	
     	currentGTree = this.index;
     	
+    	// Iteramos en cada caracter de la palabra que equivale al nivel del arbol
     	for (int i = 0; i < prefix.length(); i++) {
     		char auxChar;
     		GTreeIF<Node> nextGTree;
@@ -210,6 +219,8 @@ public class IndexTree implements IndexIF {
     		auxChar = prefix.charAt(i);
     		nextGTree = null;
     		childrenIterator = currentGTree.getChildren().iterator();
+    		
+    		//Iteramos en cada hijo del nodo actual
     		while (childrenIterator.hasNext()) {
     			GTreeIF<Node> childGTree;
     			Node root;
@@ -217,18 +228,22 @@ public class IndexTree implements IndexIF {
     			childGTree = childrenIterator.getNext();
     			root = childGTree.getRoot();
     			
+    			// Si el caracter coincide, descendemos un nivel mas en la rama del arbol
     			if (root.getNodeType() == Node.NodeType.INNER && ((NodeInner) root).getLetter() == auxChar) {
     				nextGTree = childGTree;
     			}
     		}
     		
+    		// Si el prefijo no existe en el arbol devolvemos nulo
     		if (nextGTree == null) {
     			return null;
     		}
+    		
     		currentGTree = nextGTree;
     	}
     	
     	wordPairs = new Queue<Pair_W_SeqPSF>();
+    	// Una vez en el ultimo nodo correspondiente al prefijo, de manera recursiva almacenamos los pares de cada hijo posible
     	collectWords(currentGTree, prefix, wordPairs);
     	return wordPairs.iterator();
     }

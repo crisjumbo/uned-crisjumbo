@@ -21,6 +21,7 @@ public class IndexSequence implements IndexIF {
     	pair = new Pair_W_SeqPSF(p);
     	foundPSF = pair.getSeqPSR();
     	
+    	// Iteramos la lista hasta encontrar la palabra
     	if (iterator != null) {
         	while(iterator.hasNext()) {
         		pair = iterator.getNext();
@@ -46,14 +47,14 @@ public class IndexSequence implements IndexIF {
     	pairSF = new Pair_S_F(doc_id, freq);
     	seqPSF = new Seq_PSF();
     	seqPSF.add(pairSF);
+    	insertPosition = 1;
+    	found = false;
     	
     	if (this.index.isEmpty()) {
-    		insertPosition = 1;
     		((List<Pair_W_SeqPSF>) this.index).insert(insertPosition, new Pair_W_SeqPSF(p, seqPSF));
     	} else {
-    		insertPosition = 1;
-    		found = false;
     		listIterator = this.index.iterator();
+    		// Iteramos la lista hasta encontrar la palabra o encontrar su posicion en la lista
     		while(listIterator.hasNext()) {
     			Pair_W_SeqPSF currentPair;
     			
@@ -69,6 +70,7 @@ public class IndexSequence implements IndexIF {
     			insertPosition++;
     		}
     		
+    		// Si el par no estaba en la lisa, se inserta en la posicion indicada
     		if (!found) {
     			((List<Pair_W_SeqPSF>) this.index).insert(insertPosition, new Pair_W_SeqPSF(p, seqPSF));
     		}
@@ -86,6 +88,7 @@ public class IndexSequence implements IndexIF {
     	iteratorMain = this.index.iterator();
 		counter = 1;
     	
+		// Iteramos toda la lista para almacenar las palabras con el prefijo
 		if (iteratorMain != null) {
 	    	while(iteratorMain.hasNext()) {
 	    		Pair_W_SeqPSF currentWPair;
